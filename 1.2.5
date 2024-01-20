@@ -1,1 +1,147 @@
+# 1.2.5 Exercises
+# Jimmy Hattier
+# 1/20/24
 
+library(tidyverse)
+library(palmerpenguins)
+library(ggthemes)
+
+# 1) How many rows are in penguins? How many columns?
+
+view (penguins)
+# penguins has 344 entries (rows) and 8 columns.
+
+# 2) What does the bill_depth_mm variable in the penguins data frame describe?
+# Read the help for ?penguins to find out.
+
+?penguins
+# The bill_depth_mm variable denotes the depth
+# of each penguin's bill in millimeters.
+
+# 3) Make a scatterplot of bill_depth_mm vs. bill_length_mm.
+# That is, make a scatterplot with bill_depth_mm on the y-axis
+# and bill_length_mm on the x-axis.
+# Describe the relationship between these two variables.
+
+ggplot(data = penguins, mapping = aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(mapping = aes(color = species, shape = species)) +
+  geom_smooth(method = "lm") +
+  labs(title = "Bill length and depth",
+       subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+       x = "Bill length (mm)", y = "Bill depth (mm)",
+       color = "Species", shape = "Species") +
+  scale_color_colorblind()
+# The scatterplot shows that as bill length increases, bill depth decreases.
+
+# 4) What happens if you make a scatterplot of species vs. bill_depth_mm?
+# What might be a better choice of geom?
+
+ggplot(data = penguins, mapping = aes(x = species, y = bill_depth_mm)) +
+  geom_point() +
+  labs(title = "Bill depth by penguin species",
+       subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+       x = "Penguin species", y = "Bill depth (mm)", color = "Species",
+       shape = "Species") +
+  scale_color_colorblind()
+# This plot shows the range of each species bill depth,
+# but it's difficult to see individual data points this way.
+# I would use a boxplot geometry to show average bill length by species
+# to view the bill depth range more clearly.
+
+# 5) Why does the following give an error and how would you fix it?
+ggplot(data = penguins) +
+geom_point()
+
+# The code above generates this error: "geom_point()` requires the
+# following missing aesthetics: x and y"
+# To fix this, we need to specify which variables we want to display on our
+# scatterplot axes.
+
+# 6) What does the na.rm argument do in geom_point()?
+# What is the default value of the argument?
+# Create a scatterplot where you successfully use this argument set to TRUE.
+
+# the rm argument removes values from a dataset, so the na.rm argument removes
+# missing (N/A) values. The default value of this argument is FALSE,
+# because R won't remove values in calculations by default.
+# The scatterplot below specifies na.rm = TRUE
+# so the graph removes the missing values before plotting it.
+ggplot(data = penguins, mapping = aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(mapping = aes(color = species, shape = species), na.rm = TRUE) +
+  labs(title = "Bill length and depth",
+       subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+       x = "Bill length (mm)", y = "Bill depth (mm)",
+       color = "Species", shape = "Species") +
+  scale_color_colorblind()
+
+# 7) Add the following caption to the plot you made in the previous exercise:
+# “Data come from the palmerpenguins package.”
+# Hint: Take a look at the documentation for labs().
+
+?labs
+ggplot(data = penguins, mapping = aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(mapping = aes(color = species, shape = species), na.rm = TRUE) +
+  labs(title = "Bill length and depth",
+       subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+       caption = "Data come from the palmerpenguins package.",
+       x = "Bill length (mm)", y = "Bill depth (mm)",
+       color = "Species", shape = "Species") +
+  scale_color_colorblind()
+
+# 8) Recreate the following visualization.
+library(png)
+download.file(
+  "https://r4ds.hadley.nz/data-visualize_files/figure-html/unnamed-chunk-17-1.png",
+  destfile = "C:/Users/eptic/Downloads/unnamed-chunk-17-1.png", mode = 'wb')
+visual1 <- readPNG('C:/Users/eptic/Downloads/unnamed-chunk-17-1.png')
+grid::grid.raster(visual1)
+# What aesthetic should bill_depth_mm be mapped to?
+# And should it be mapped at the global level or at the geom level?
+
+# bill_depth_mm should be mapped to the color of the data points.
+# This mapping should be mapped at the geom_point level,
+# since the global variables don't include bill_depth_mm.
+
+ggplot(data = penguins, mapping = aes(x = flipper_length_mm,
+                                      y = body_mass_g)) +
+  geom_point(mapping = aes(color = bill_depth_mm), na.rm = TRUE) +
+  geom_smooth()
+  scale_color_colorblind()
+
+# 9) Run this code in your head and predict what the output will look like.
+# Then, run the code in R and check your predictions.
+# ggplot(data = penguins,
+# mapping = aes(x = flipper_length_mm, y = body_mass_g, color = island)) +
+# geom_point() +
+# geom_smooth(se = FALSE)
+
+# My predictions: this will generate a scatterplot comparing
+# the flipper length of penguins to their body mass, with colors showing
+# which penguins live on each island. There will be an overlayed regression
+# line without confidence intervals around the line showing the direction of
+# the relationship.
+  
+ggplot(data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g, color = island)) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+
+# My prediction about the regression line was incorrect because the graph
+# generated a line for each island. The rest of my predictions were correct.
+  
+# 10) Will these two graphs look different? Why/why not?
+# ggplot(data = penguins,
+# mapping = aes(x = flipper_length_mm, y = body_mass_g)) +
+# geom_point() +
+# geom_smooth()
+
+# ggplot() +
+# geom_point(data = penguins,
+# mapping = aes(x = flipper_length_mm, y = body_mass_g)) +
+# geom_smooth(data = penguins,
+# mapping = aes(x = flipper_length_mm, y = body_mass_g))
+
+# These two graphs should look the same. The first graph set the parameters
+# at a global level, applying them to both geom layers. The second graph set
+# the parameters at a local level, but both geom layers have the exact same
+# parameters as those set at the global level in the first graph.
