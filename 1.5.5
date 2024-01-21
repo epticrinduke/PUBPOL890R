@@ -1,1 +1,101 @@
+# 1.5.5 Exercises
+# Jimmy Hattier
+
+library(tidyverse)
+library(palmerpenguins)
+library(ggthemes)
+
+# 1) The mpg data frame that is bundled with the ggplot2 package
+# contains 234 observations collected by the US Environmental Protection Agency
+# on 38 car models. Which variables in mpg are categorical?
+# Which variables are numerical? (Hint: Type ?mpg to read the documentation
+# for the dataset.) How can you see this information when you run mpg?
+
+?mpg
+view(mpg)
+
+# The mpg data frame only has four numerical variables:
+# displ (engine displacement in liters), cyl (number of cylinders),
+# cty (city mpg), and hwy (highway mpg).
+# The other seven variables are categorical, including year which is coded
+# as an integer variable. In general, variables coded as character strings
+# (<chr> when running the data frame) are categorical. 
+
+# 2) Make a scatterplot of hwy vs. displ using the mpg data frame.
+# Next, map a third, numerical variable to color, then size,
+# then both color and size, then shape. How do these aesthetics behave
+# differently for categorical vs. numerical variables?
+
+ggplot(mpg, aes(x = hwy, y = displ)) +
+  geom_point(na.rm = TRUE)
+
+ggplot(mpg, aes(x = hwy, y = displ, color = cty)) +
+  geom_point(na.rm = TRUE)
+
+# The color for a continuous numerical variable is a color scale
+# instead of discrete colors.
+
+ggplot(mpg, aes(x = hwy, y = displ, size = cty)) +
+  geom_point(na.rm = TRUE)
+
+# The sizes were made discrete by bins created on the back end.
+
+ggplot(mpg, aes(x = hwy, y = displ, color = cty, size = cty)) +
+  geom_point(na.rm = TRUE)
+
+# The colors applied to the discrete sizes remained a scale.
+
+ggplot(mpg, aes(x = hwy, y = displ, shape = cty)) +
+  geom_point(na.rm = TRUE)
+
+# This scatterplot failed because shape will not bin
+# a continuous variable on the back end. I corrected it below:
+
+ggplot(mpg, aes(x = hwy, y = displ, shape = cty)) +
+  geom_point(na.rm = TRUE) +
+  scale_shape_binned()
+
+# 3) In the scatterplot of hwy vs. displ, what happens if you map
+# a third variable to linewidth?
+
+ggplot(mpg, aes(x = hwy, y = displ, linewidth = cty)) +
+  geom_point(na.rm = TRUE)
+
+# Absolutely nothing happens because there isn't a linewidth to manipulate
+# in a scatterplot.
+  
+# 4) What happens if you map the same variable to multiple aesthetics?
+
+# As we saw in question 2 and in previous exercises, mapping the same
+# variable to multiple aesthetics will display the same trend in different ways.
+
+# 5) Make a scatterplot of bill_depth_mm vs. bill_length_mm and color
+# the points by species. What does adding coloring by species reveal
+# about the relationship between these two variables?
+# What about faceting by species?
+
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(aes(color = species), na.rm = TRUE)
+
+# Coloring by species reveals Adelie penguins have short, deep bills,
+# Chinstrap penguins have long, deep bills, and Gentoo penguins have
+# long, shallow bills.
+
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(aes(color = species), na.rm = TRUE) +
+  facet_wrap(~species)
+
+# Faceting by species helps show that Adelie penguins have the greatest range
+# of bill depth, while Chinstrap and Gentoo have greater range of bill length.
+
+# 6) Why does the following yield two separate legends?
+ggplot(data = penguins, mapping = aes(x = bill_length_mm, y = bill_depth_mm, 
+    color = species, shape = species)) +
+  geom_point() +
+  labs(color = "Species")
+# How would you fix it to combine the two legends?
+
+# There are two legends because only one was renamed with the labs argument.
+# To combine them, I would add 'shape = "Species"' to the lab argument so both
+# have the same name.
 
