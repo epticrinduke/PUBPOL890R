@@ -1,1 +1,49 @@
+# 1.4.3 Exercises
+# Jimmy Hattier
+# 1/20/24
 
+library(tidyverse)
+library(palmerpenguins)
+library(ggthemes)
+
+# 1) Make a bar plot of species of penguins,
+# where you assign species to the y aesthetic. How is this plot different?
+
+ggplot(penguins, aes(y = fct_infreq(species))) +
+  geom_bar()
+# This plot displays horizontal bars instead of vertical bars.
+
+# 2) How are the following two plots different? Which aesthetic,
+# color or fill, is more useful for changing the color of bars?
+ggplot(penguins, aes(x = species)) +
+geom_bar(color = "red")
+
+ggplot(penguins, aes(x = species)) +
+geom_bar(fill = "red")
+
+# Using color changes the outline of a bar, while fill changes
+# the inside of the bar. So, fill is more useful for changing bar colors.
+
+# 3) What does the bins argument in geom_histogram() do?
+
+# The bins argument splits a continuous variable into bars
+# with a specified width based on the variable values. In general, the smaller
+# the bin value, the more bars in a histogram.
+
+# 4) Make a histogram of the carat variable in the diamonds dataset
+# that is available when you load the tidyverse package.
+# Experiment with different binwidths. What binwidth reveals
+# the most interesting patterns?
+
+ggplot(diamonds, aes(x = carat)) +
+  geom_histogram(binwidth = 1)
+
+ggplot(diamonds, aes(x = carat)) +
+  geom_histogram(binwidth = .1)
+
+ggplot(diamonds, aes(x = carat)) +
+  geom_histogram(binwidth = .01)
+
+# The smallest binwidth I tried (.01) revealed a number of preferred carat
+# sizes for cutting diamonds at .1 increments below 1 carat,
+# and .25 increments over 1 carat.
