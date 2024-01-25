@@ -1,1 +1,38 @@
+# 1.6.1 Exercises
+# Jimmy Hattier, Diontre Davis, and Yvonne Ma
 
+library(tidyverse)
+library(palmerpenguins)
+library(ggthemes)
+
+# 1) Run the following lines of code.
+# Which of the two plots is saved as mpg-plot.png? Why?
+
+ggplot(mpg, aes(x = class)) +
+  geom_bar()
+ggplot(mpg, aes(x = cty, y = hwy)) +
+  geom_point()
+ggsave("mpg-plot.png")
+
+library(png)
+
+mpgPNG1 <- readPNG("C:/Users/eptic/Documents/mpg-plot.png")
+
+grid::grid.raster(mpgPNG1)
+
+# Only the scatterplot was saved as a .png file because it's
+# the most recent ggplot argument.
+
+# 2) What do you need to change in the code above to save the plot as a PDF
+# instead of a PNG? How could you find out what types of image files
+# would work in ggsave()?
+
+?ggsave
+
+ggplot(mpg, aes(x = cty, y = hwy)) +
+  geom_point()
+ggsave("mpg-plot.pdf")
+
+# Reviewing the documentation of ggsave confirms that it supports .pdf
+# documents. Changing the filename extension to .pdf creates a PDF
+# instead of a .png file. 
