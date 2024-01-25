@@ -1,5 +1,5 @@
 # 1.4.3 Exercises
-# Jimmy Hattier
+# Jimmy Hattier, Diontre Davis, and Yvonne Ma
 # 1/20/24
 
 library(tidyverse)
@@ -11,7 +11,9 @@ library(ggthemes)
 
 ggplot(penguins, aes(y = fct_infreq(species))) +
   geom_bar()
-# This plot displays horizontal bars instead of vertical bars.
+# This plot displays horizontal bars instead of vertical bars. 
+#The data graphed are categorical variables of 
+#frequencies on the y= axis.
 
 # 2) How are the following two plots different? Which aesthetic,
 # color or fill, is more useful for changing the color of bars?
@@ -23,6 +25,9 @@ geom_bar(fill = "red")
 
 # Using color changes the outline of a bar, while fill changes
 # the inside of the bar. So, fill is more useful for changing bar colors.
+#The plots are also different because the actual graphs measure the frequencies
+#categorical variables with species in the x axis as opposed to the earlier
+#graph.
 
 # 3) What does the bins argument in geom_histogram() do?
 
@@ -46,4 +51,5 @@ ggplot(diamonds, aes(x = carat)) +
 
 # The smallest binwidth I tried (.01) revealed a number of preferred carat
 # sizes for cutting diamonds at .1 increments below 1 carat,
-# and .25 increments over 1 carat.
+# and .25 increments over 1 carat. The bindwidth (0.01)
+#revealed the largest count of diamonds that could be produced per 0.01 carat.
