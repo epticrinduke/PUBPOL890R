@@ -1,0 +1,97 @@
+# 3.2.5 Exercises
+# Jimmy Hattier
+# 1/26/24
+
+library(tidyverse)
+library(nycflights13)
+
+# 1) In a single pipeline for each condition, find all flights
+# that meet the condition:
+# - Had an arrival delay of two or more hours
+
+flights |>
+  filter(arr_delay > 120)
+
+# - Flew to Houston (IAH or HOU)
+
+flights |> 
+  filter(dest == "IAH" | dest == "HOU")
+
+# - Were operated by United, American, or Delta
+
+flights |> 
+  filter(carrier == "UA" | carrier == "AA" | carrier == "DL")
+
+# - Departed in summer (July, August, and September)
+
+flights |> 
+  filter(month %in% c(7, 8, 9))
+
+# - Arrived more than two hours late, but didn’t leave late
+
+flights |> 
+  filter(arr_delay > 120 & dep_delay <= 0)
+
+# - Were delayed by at least an hour, but made up over 30 minutes in flight
+
+flights |> 
+  filter(dep_delay >= 60 & dep_delay-arr_delay >= 30)
+
+# 2) Sort flights to find the flights with longest departure delays.
+# Find the flights that left earliest in the morning.
+
+flights |> 
+  arrange(desc(dep_delay))
+
+flights |> 
+  arrange(dep_time)
+
+# 3) Sort flights to find the fastest flights.
+# (Hint: Try including a math calculation inside of your function.)
+
+flights |> 
+  arrange(abs(arr_time-dep_time))
+
+# This will give the shortest flights that took off and landed on the same day.
+# The issue is this cannot measure overnight flights.
+
+flights |> 
+  arrange(air_time)
+
+# This will give the expected speed of the flight regardless of
+# the actual departure and arrival times, but it doesn't capture variance.
+
+# 4) Was there a flight on every day of 2013?
+
+flights |> 
+  distinct(month, day)
+
+# There are 365 rows, so yes, there was a flight on every day of 2013.
+
+# 5) Which flights traveled the farthest distance?
+# Which traveled the least distance?
+
+flights |> 
+  arrange(desc(distance)) |> 
+  print(width = Inf)
+
+# The longest nonstop flights listed in 2013 were from New York to Honolulu.
+
+flights |> 
+  arrange(distance) |> 
+  print(width = Inf)
+
+# There is one listed flight from Newark to La Guardia on 7/27/13.
+# The next shortest flights were from Newark to Philadelphia.
+
+
+
+# 6) Does it matter what order you used filter() and arrange()
+# if you’re using both? Why/why not? Think about the results
+# and how much work the functions would have to do.
+
+# Yes, order matters in a piped function, since they will be applied
+# first in, first out. In this specific case, the results will be the same,
+# but the amount of data processing differs. If arrange() is used before
+# filter(), then you are asking the function to sort data you won't use
+# in the final readout!
