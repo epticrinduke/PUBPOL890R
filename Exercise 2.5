@@ -1,0 +1,27 @@
+#Diontre Davis
+#Public Policy 890
+
+#1. Why does this code not work?
+#my_variable <- 10
+#my_varıable
+#> Error in eval(expr, envir, enclos): object 'my_varıable' not found
+#Answer: The error appeared because the instructions for this assignment were 
+# specific enough for R to process.
+
+#2. Tweak each of the following R commands so that they run correctly:
+library(tidyverse)
+ggplot(data = mpg) + 
+  geom_point(mapping = aes (x = displ, y = hwy)) +
+  geom_smooth(aes (x = displ, y = hwy), method = "lm")
+
+#3. If I press Alt + Shift + K/Option + Shift + K, then I am able to see all of
+#the shortcuts to certain commands on R that can be done using the keyboard. 
+# This can also be found under the "Tool" window.
+
+#4.Answer: The plot that is saved as a png is the bar plot was saves. In the 
+#command ggsave it was specified to save the bar plot as a png. 
+my_bar_plot <- ggplot(mpg, aes(x = class)) +
+  geom_bar()
+my_scatter_plot <- ggplot(mpg, aes(x = cty, y = hwy)) +
+  geom_point()
+ggsave(filename = "mpg-plot.png", plot = my_bar_plot)
