@@ -1,0 +1,77 @@
+# 3.3.5 Exercises
+# Jimmy Hattier
+
+library(tidyverse)
+library(nycflights13)
+
+# 1) Compare dep_time, sched_dep_time, and dep_delay.
+# How would you expect those three numbers to be related?
+
+flights |> 
+  select(dep_time, sched_dep_time, dep_delay)
+
+# I expect dep_delay value to equal the difference between the sched_dep_time
+# and the dep_time.
+
+# 2) Brainstorm as many ways as possible to select
+# dep_time, dep_delay, arr_time, and arr_delay from flights.
+
+# Beyond the simple select(), the following helper functions will select
+# them as well:
+
+flights |> 
+  select(starts_with("dep") | starts_with("arr"))
+
+flights |> 
+  select(ends_with("time") | starts_with("delay"))
+
+flights |> 
+  select(contains("_t") | contains ("_d")) |> 
+  select(!contains("sched") & !contains("air"))
+
+# 3) What happens if you specify the name of the same variable
+# multiple times in a select() call?
+
+flights |> 
+  select(dep_time, air_time, dep_time)
+
+# Despite specifying dep_time twice, the resulting tibble only showed it once.
+
+# 4) What does the any_of() function do?
+# Why might it be helpful in conjunction with this vector?
+variables <- c("year", "month", "day", "dep_delay", "arr_delay")
+
+# The any_of() helper function allows for a selection of variables
+# within a vector. This means using the "variables" vector above to specify
+# the variables to select with the any_of() helper function.
+
+flights |> 
+  select(any_of(variables))
+
+
+# 5) Does the result of running the following code surprise you?
+# How do the select helpers deal with upper and lower case by default?
+# How can you change that default?
+flights |>
+  select(contains("TIME"))
+
+# Yes, I would expect the character search to be case-sensitive, but it is not
+# by default. To change this, you can add the parameter ignore.case = FALSE.
+
+flights |> 
+  select(contains("TIME", ignore.case = FALSE))
+
+# 6) Rename air_time to air_time_min to indicate units of measurement
+# and move it to the beginning of the data frame.
+
+flights |> 
+  rename(air_time_min = air_time) |> 
+  relocate(air_time_min)
+
+# 7) Why doesn’t the following work, and what does the error mean?
+flights |> 
+  select(tailnum) |> 
+  arrange(arr_delay)
+
+# Following the pipe path, only one variable selected was "tailnum,"
+# so the arrange() function didn't find "arr_delay"
