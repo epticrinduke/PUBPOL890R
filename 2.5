@@ -1,15 +1,15 @@
-# 2.5 Exercise
-# Jimmy Hattier, Diontre Davis, and Yvonne Ma
-# 1/23/24
+# Exercise 2
+# Yvonne Ma
 
-# 1) Why does this code not work?
+# 1. Why does this code not work?
 
 my_variable <- 10
 my_varıable
 
-# The object "my_varıable" has the wrong character for "i", instead using "ı"
+# The object "my_varıable" is not found, because it uses "ı" instead of "i", so in R's view there only exists "my_variable", not "my_varıable",
+# and R cannot recognize it
 
-# 2) Tweak each of the following R commands so that they run correctly:
+# 2. Tweak each of the following R commands so that they run correctly:
 
 libary(todyverse)
 
@@ -17,22 +17,26 @@ ggplot(dTA = mpg) +
   geom_point(maping = aes(x = displ y = hwy)) +
   geom_smooth(method = "lm)
 "
-# ^I have to close the open quotation marks before I can code the correction!
+
+# Correct as follows:
+
 library(tidyverse)
 
-ggplot(data = mpg) +
-  geom_point(mapping = aes(x = displ, y = hwy)) +
-  geom_smooth(aes(x = displ, y = hwy), method = "lm")
-# The code is littered with errors, including misspelling,
-# improper capitalization, and missing punctuation.
+ggplot(
+  data = mpg,
+  mapping = aes(x = displ, y = hwy)) +
+  geom_point()+
+  geom_smooth(method = "lm")
 
-# 3) Press Option + Shift + K / Alt + Shift + K. What happens?
+# Do we have to do "  geom_smooth(aes(x = displ, y = hwy), method = "lm")"?
+# can we omit aes(x,y) inside geo_smooth as above?
+
+# 3. Press Option + Shift + K / Alt + Shift + K. What happens?
 # How can you get to the same place using the menus?
 
-# It opens the keyboard shortcut dialog window. You can also find it in the
-# ribbon under the Tools tab.
+# I open the keyboard shortcut quick reference. I can also get to it in tools.
 
-# 4) Let’s revisit an exercise from the Section 1.6.
+# 4. Let’s revisit an exercise from the Section 1.6.
 # Run the following lines of code.
 my_bar_plot <- ggplot(mpg, aes(x = class)) +
   geom_bar()
@@ -41,5 +45,4 @@ my_scatter_plot <- ggplot(mpg, aes(x = cty, y = hwy)) +
 ggsave(filename = "mpg-plot.png", plot = my_bar_plot)
 # Which of the two plots is saved as mpg-plot.png? Why?
 
-# This time, the bar plot was saved because the assignment operator allowed
-# the ggsave argument to specify which plot was saved as a PNG.
+# The bar plot was saved as mpg-plot.png, because the command is to save the bar plot.
