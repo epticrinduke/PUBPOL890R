@@ -1,0 +1,199 @@
+# 3.5.7 Exercises
+# Jimmy Hattier, Diontre Davis, Yvonne Ma
+
+library(tidyverse)
+library(nycflights13)
+
+# 1) Which carrier has the worst average delays?
+# Challenge: can you disentangle the effects of bad airports vs. bad carriers?
+# Why/why not?
+
+flights |> 
+  group_by(carrier) |> 
+  summarize(avg_delay = mean(dep_delay, na.rm = TRUE), n = n()) |> 
+  arrange(desc(avg_delay))
+
+# Frontier (F9) had the highest average delay at 20.2 minutes, followed closely
+# by ExpressJet Airlines at 20.0 minutes.
+
+flights |> 
+  group_by(dest) |> 
+  summarize(avg_delay = mean(dep_delay, na.rm = TRUE), n = n()) |> 
+  arrange(desc(avg_delay))
+
+# Columbia, SC (CAE) was the most delayed destination at 35.6 minutes
+# average delay, followed closely by Tulsa, OK (TUL) at 34.9 minutes, however
+# delays are more frequently due to problems at the airport of origin.
+
+flights |> 
+  group_by(origin) |> 
+  summarize(avg_delay = mean(dep_delay, na.rm = TRUE), n = n()) |> 
+  arrange(desc(avg_delay))
+
+# Here we see Newark airport (EWR) has an average delay of 15.1 minutes,
+# which is 3 minutes more than JFK Airport
+# and 5 minutes more than La Guardia (LGA).
+
+flights |> 
+  group_by(carrier, origin) |> 
+  summarize(avg_delay = mean(dep_delay, na.rm = TRUE), n = n()) |> 
+  arrange(desc(avg_delay)) |> 
+  print(n = 35)
+  
+# Here we can see that F9 only flies out of LGA, which has the lowest average
+# delay time of the three NYC area airports. Right below it, we see EV flies
+# out of both EWR and LGA with similar average delays
+# (20.2 and 19.1 minutes, respectively). With this surface level analysis, the
+# carriers seem to drive the departure delays more than airports.
+
+
+# 2) Find the flights that are most delayed upon departure
+# TO each destination.
+
+flights |> 
+  group_by(dest) |> 
+  slice_max(dep_delay, n = 1) |> 
+  relocate(dest, dep_delay) |> 
+  arrange(desc(dep_delay))
+
+# 3) How do delays vary over the course of the day?
+# Illustrate your answer with a plot.
+
+delays_by_hour <- flights |> 
+  group_by(hour) |> 
+  summarize(avg_delay = mean(dep_delay, na.rm = TRUE), n = n())
+
+ggplot(delays_by_hour, aes(hour, avg_delay)) +
+  geom_line()
+  
+
+# 4) What happens if you supply a negative n to slice_min() and friends?
+
+flights |> 
+  group_by(month) |> 
+  slice_min(dep_time, n = 1)
+
+flights |> 
+  group_by(month) |> 
+  slice_min(dep_time, n = -1)
+
+# Comparing these two functions, a negative n invalidates the slice,
+# instead displaying all rows in order of the specified group
+# and slice parameters.
+
+# 5) Explain what count() does in terms of the dplyr verbs you just learned.
+# What does the sort argument to count() do?
+
+# The count() verb behaves differently based on the previous verb applied to the
+# data frame. In the group_by() example, count() supplies the n for each group.
+
+flights |> 
+  group_by(month) |> 
+  count()
+
+# When used after summarize(), count() shows how many rows were summarized,
+# which is 12 in the case of month groups.
+
+flights |> 
+  group_by(month) |> 
+  summarize(mean(dep_delay, na.rm = TRUE)) |> 
+  count()
+
+# And with the slice family of functions, the count() verb returns the number
+# of rows in each sliced group, which is redundant if you've already specified
+# the n for your slice.
+
+flights |> 
+  group_by(air_time) |> 
+  slice_max(arr_delay, n = 1) |> 
+  count()
+
+# The count() verb is helpful in conjunction with slice if you specified a
+# proportion instead of an n, since the count for each group could be different.
+
+flights |> 
+  group_by(dest) |> 
+  slice_max(arr_delay, prop = .1) |> 
+  count()
+
+# Adding the sort argument to count() will display the largest n first.
+
+flights |> 
+  group_by(dest) |> 
+  slice_max(arr_delay, prop = .1) |> 
+  count(sort = TRUE)
+
+# 6) Suppose we have the following tiny data frame:
+df <- tibble(
+x = 1:5,
+y = c("a", "b", "a", "a", "b"),
+z = c("K", "K", "L", "L", "K")
+)
+# a) Write down what you think the output will look like, then check
+# if you were correct, and describe what group_by() does.
+df |> 
+  group_by(y)
+
+# I think this will produce a tibble with three parameters: x, y, and z. The x
+# column will have a count from 1 to 5, while the y and z columns will have the
+# character values specified in the combine function.
+
+# group_by(y) will sort df into two groups and reorder it by listing the
+# "a" values first, then "b." I was incorrect in that it didn't reorder df.
+
+# b) Write down what you think the output will look like, then check
+# if you were correct, and describe what arrange() does.
+# Also comment on how it’s different from the group_by() in part (a)?
+df |>
+  arrange(y)
+
+# This will sort the rows by the y values. This will sort the rows
+# but subsequent verbs won't treat df as having two groups.
+
+# c) Write down what you think the output will look like, then check
+# if you were correct, and describe what the pipeline does.
+df |>
+  group_by(y) |>
+  summarize(mean_x = mean(x))
+
+# This will return two values displaying the mean x value by y values a and b.
+# This pipeline defines the groups the summarize function will use to report
+# the mean values.
+
+# d) Write down what you think the output will look like, then check
+# if you were correct, and describe what the pipeline does.
+# Then, comment on what the message says.
+df |>
+  group_by(y, z) |>
+  summarize(mean_x = mean(x))
+
+# This will return values displaying the mean x value for each unique pair of
+# y and z values, in this case 3 unique pairs. The message alerts the user that
+# results were grouped by y value and that grouping another way requires the
+# .groups arguments to override.
+
+# e) Write down what you think the output will look like, then check
+# if you were correct, and describe what the pipeline does.
+# How is the output different from the one in part (d)?
+df |>
+  group_by(y, z) |>
+  summarize(mean_x = mean(x), .groups = "drop")
+
+# This will still produce the mean x values for each unique y, z pair, but this
+# time the results won't be grouped by y value for subsequent manipulation.
+
+# f) Write down what you think the outputs will look like, then check
+# if you were correct, and describe what each pipeline does.
+# How are the outputs of the two pipelines different?
+df |>
+  group_by(y, z) |>
+  summarize(mean_x = mean(x))
+
+df |>
+  group_by(y, z) |>
+  mutate(mean_x = mean(x))
+
+# The first pipeline is identical to the pipeline in part d). The second
+# pipeline will create a new variable called "mean_x" that will display the
+# mean x value for each unique y, z pair. This is different because it will
+# display it for each row, not just each pair.
