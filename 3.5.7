@@ -49,6 +49,8 @@ flights |>
 
 # 2) Find the flights that are most delayed upon departure
 # TO each destination.
+#The flights that had the most delays are HNL, CMH, ORD, SFO, and CVG (in 
+#is order).
 
 flights |> 
   group_by(dest) |> 
@@ -58,6 +60,12 @@ flights |>
 
 # 3) How do delays vary over the course of the day?
 # Illustrate your answer with a plot.
+#How do delays vary over the course of the day. Illustrate your answer 
+#with a plot.
+#The average delays by hour tend to increase dramatically later in the day. This
+#is most likely due to the volume of people booking flights increasing each hour 
+#of the day. The delays of flights drop around 8pm at night possibly because 
+#less people are begin booking flights after this time.
 
 delays_by_hour <- flights |> 
   group_by(hour) |> 
@@ -79,7 +87,9 @@ flights |>
 
 # Comparing these two functions, a negative n invalidates the slice,
 # instead displaying all rows in order of the specified group
-# and slice parameters.
+# and slice parameters. The negative n organizes
+#data by listing the dep_time within all 12 months instead of the lowest
+#amount of time it took to depart for each month.
 
 # 5) Explain what count() does in terms of the dplyr verbs you just learned.
 # What does the sort argument to count() do?
