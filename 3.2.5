@@ -42,9 +42,14 @@ flights |>
 
 flights |> 
   arrange(desc(dep_delay))
+  
+#The flights with longest departure delays is 20130109 departure time 6:41,
+#and it delays 1301 minutes.
 
 flights |> 
   arrange(dep_time)
+  
+#The flights left earliest in the morning, and they left at 1 am.
 
 # 3) Sort flights to find the fastest flights.
 # (Hint: Try including a math calculation inside of your function.)
