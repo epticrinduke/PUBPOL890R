@@ -1,0 +1,67 @@
+# 5.2.1 Exercises
+# Jimmy Hattier, Diontre Davis, and Yvonne Ma
+# 2/8/24
+
+library(tidyverse)
+
+# 1) For each of the sample tables, describe what each observation
+# and each column represents.
+
+# In table1, each row represents the number of TB cases in a given year
+# in a given country with a given population. The column variables are therefore
+# country, year, cases, and population.
+
+# In table2, each row represents one numerical data point, either TB case count
+# or population count, in a given country in a given year. The column variables
+# are therefore country, year, type (cases or population), and count.
+
+# In table3, each row represents the TB case rate in a given country in a given
+# year. The column variables are therefore country, year, and rate.
+
+# 2) Sketch out the process you’d use to calculate the rate for table2 and
+# table3. You will need to perform four operations:
+#   a) Extract the number of TB cases per country per year.
+#   b) Extract the matching population per country per year.
+#   c) Divide cases by population, and multiply by 10000.
+#   d) Store back in the appropriate place.
+# You haven’t yet learned all the functions you’d need to actually perform
+# these operations, but you should still be able to think through the
+# transformations you’d need.
+
+# For table3, calculating the rate per 10,000 people is a simple task. The rows
+# are already separated by country by year, and the base rate is given. All we
+# need to do is mutate a new rate variable by multiplying the current "rate"
+# variable by 10000.
+
+# The process for table2 is much trickier and requires reshaping the dataframe.
+
+country <- c("Afghanistan", "Afghanistan", "Afghanistan", "Afghanistan",
+             "Brazil", "Brazil", "Brazil", "Brazil", "China", "China", "China",
+             "China")
+year <- c(1999, 1999, 2000, 2000, 1999, 1999, 2000, 2000, 1999, 1999, 2000, 2000)
+type <- c("cases", "population", "cases", "population", "cases", "population",
+          "cases", "population", "cases", "population", "cases", "population")
+count <- c(745, 19987071, 2666, 20595360, 37737, 172006362, 80488, 174504898,
+           212258, 1272915272, 213766, 1280428583)
+
+table2_before <-
+  data.frame(country, year, type, count)
+
+# This function recreates the table2 presented in the textbook.
+
+table2_combine <-
+  reshape(table2_before,
+        idvar = c("country", "year"),
+        timevar = "type",
+        direction = "wide")
+
+# The reshape function combines rows together by country and year.
+
+table2_cases <-
+  table2_combine |> 
+  mutate(table2_combine,
+       cases_per_10k = count.cases / count.population * 10000)
+
+# Finally, mutate creates a new column to present cases per 10,000 people.
+
+view(table2_cases)
