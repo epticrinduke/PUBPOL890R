@@ -1,0 +1,64 @@
+#22.5.3
+
+install.packages("arrow")
+install.packages("DBI")
+install.packages("duckdb")
+library(tidyverse)
+library(arrow)
+library(dbplyr, warn.conflicts = FALSE)
+library(duckdb)
+dir.create("data", showWarnings = FALSE)
+
+curl::multi_download(
+  "https://r4ds.s3.us-west-2.amazonaws.com/seattle-library-checkouts.csv",
+  "data/seattle-library-checkouts.csv",
+  resume = TRUE
+)
+seattle_pq <- open_dataset(pq_path)
+
+#1. Figure out the most popular book each year
+
+popular_books <- seattle_pq %>%
+  group_by(CheckoutYear, Title) %>%
+  summarize(TotalCheckouts = sum(Checkouts))
+
+most_popular_books <- popular_books %>%
+  arrange(CheckoutYear, desc(TotalCheckouts)) %>%
+  group_by(CheckoutYear) %>%
+  slice(1)  
+
+most_popular_books
+
+#2. Which author has the most books in the Seattle library system?
+
+author_books_count <- seattle_pq %>%
+  group_by(Creator) %>%
+  summarize(BooksCount = n_distinct(Title))
+
+most_books_author <- author_books_count %>%
+  arrange(desc(BooksCount))
+
+most_books_author
+
+#3. How had checkouts of books vs ebooks changed over the last 10 years?
+
+last_10_years <- Sys.Date() - 3650  
+filtered_data <- seattle_pq %>%
+  filter(CheckoutYear >= year(last_10_years))
+
+checkout_summary <- filtered_data %>%
+  group_by(MaterialType, CheckoutYear) %>%
+  summarize(TotalCheckouts = sum(Checkouts))
+
+pivot_checkout_summary <- checkout_summary %>%
+  pivot_wider(names_from = MaterialType, values_from = TotalCheckouts, values_fill = 0)
+
+ggplot(pivot_checkout_summary, aes(x = CheckoutYear)) +
+  geom_line(aes(y = BOOK, color = "Books")) +
+  geom_line(aes(y = EBOOK, color = "Ebooks")) +
+  labs(title = "Checkouts of Books vs Ebooks Over the Last 10 Years",
+       x = "Year", y = "Total Checkouts",
+       color = "Material Type") +
+  scale_color_manual(values = c("Books" = "blue", "Ebooks" = "red")) +
+  theme_minimal()
+
