@@ -1,0 +1,102 @@
+# Jimmy Hattier, Diontre Davis, and Yvonne Ma
+
+#Chapter 4
+
+#Exercise 4.6.1
+
+install.packages("styler")
+library("tidyverse")
+library("nycflights13")
+
+#1.
+
+flights |>
+  filter(dest == "IAH") |>
+  group_by(year, month, day) |> 
+  summarize(n=n(),
+  delay = mean(arr_delay, na.rm = TRUE)) |> 
+  filter(n>10)
+
+flights |> 
+  filter(carrier == "UA", dest%in%c("IAH", "HOU"), sched_dep_time > 
+           0900, sched_arr_time < 2000) |> 
+  group_by(flight) |> 
+  summarize(
+    delay = mean(arr_delay, na.rm = TRUE), 
+    cancelled = sum(is.na(arr_delay)), n=n()) |>
+  filter(n>10)
+
+
+#Chapter 7.2.4
+
+#1. What function would you use to read a file where fields were separated 
+#with “|”?
+
+#You need use the the read_delim() function with the argument delim="|"
+
+#2. Apart from file, skip, and comment, what other arguments do read_csv() 
+#and read_tsv() have in common?
+
+#Common arguments:col_names, col_types, "quotes", "quoted_na", "na", "trim_ws"
+
+#col_names and col_types are used to specify the column names and 
+#how to parse the columns.
+#na and quoted_na control which strings are treated as missing values when 
+#parsing vectors 
+#trim_ws trims whitespace before and after cells before parsing
+
+#3. What are the most important arguments to read_fwf()?
+
+#The most important arguments to read_fwf() is reading col_positions.
+#col_positions tells a function where data columns begin and ends. 
+
+
+#4. Sometimes strings in a CSV file contain commas. To prevent them from causing
+#problems, they need to be surrounded by a quoting character, like " or '. 
+#By default, read_csv() assumes that the quoting character will be ".
+#To read the following text into a data frame, what argument to read_csv() 
+#do you need to specify?
+
+"x,y\n1,'a,b'"
+
+#For read_delim() a delimeter needs to be specified along with a quote argument.
+#The delimeter in this case is ",". The read_cvs() supports the quote argument 
+#anf could be listed as the following code:
+
+read_csv(x, quote = "'")
+
+#5. Identify what is wrong with each of the following inline CSV files. 
+#What happens when you run the code?
+
+read_csv("a,b\n1,2,3\n4,5,6")
+read_csv("a,b,c\n1,2\n1,2,3,4")
+read_csv("a,b\n\"1")
+read_csv("a,b\n1,2\na,b")
+read_csv("a;b\n1;3")
+
+#read("a,b\n1,2,3\n4,5,6")
+#There are only two columns specified in header "a" and "b," but the rows have 
+#three columns. #The last column is dropped as a result.
+
+#read_csv("a,b,c\n1,2\n1,2,3,4")
+#The number of columns in the data don't match the number of columns in the 
+#header. In row one, there are only two values, so column c is set to missing.
+#In row two, there is an extra value, and that value is dropped.
+
+#read_csv("a,b\n\"1")
+#The intent of this code is not clear. The opening quote "1" is dropped because
+#it is not closed, and "a" is entered as an integer.
+
+#read_csv("a,b\n1,2\na,b")
+#In the code, "a" and "b" are treaded as character vectors because they contain
+#non-numeric strings. 
+
+#read_csv("a;b\n1;3")
+#It is better to use read_cvs2 because right now the values are separated by 
+#";" instead of ",".
+
+#6. Practice referring to non-syntactic names in the following data frame by:
+#Extracting the variable called 1.
+#Plotting a scatterplot of 1 vs. 2.
+#Creating a new column called 3, which is 2 divided by 1.
+#Renaming the columns to one, two, and three.
