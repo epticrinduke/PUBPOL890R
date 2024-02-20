@@ -1,0 +1,41 @@
+#21.5.10
+
+#1) What is distinct() translated to? How about head()?
+
+#> <SQL>
+#> SELECT DISTINCT column1, column2, ...
+#> FROM table_name
+
+#> <SQL>
+#> SELECT *
+#> FROM table_name
+
+#2)Explain what each of the following SQL queries do and try recreate them
+#using dbplyr.
+
+#> <SQL>
+#> SELECT * 
+#>   FROM flights
+#>   WHERE dep_delay < arr_delay
+
+#This query selects all columns where the arrival delays is larger than 
+#departure delays.
+
+library(dplyr)
+library(dbplyr)
+flights %>%
+  filter(dep_delay < arr_delay) %>%
+  collect()
+
+#>   SELECT *, distance / (air_time / 60) AS speed
+#>   FROM flights
+
+#This query selects all columns from the flights and calculates the speed
+#(distance divided by air time in hours) for each flight
+
+library(dplyr)
+library(dbplyr)
+flights %>%
+  mutate(speed = distance / (air_time / 60)) %>%
+  select(everything()) %>%
+  collect()  # To retrieve the result
