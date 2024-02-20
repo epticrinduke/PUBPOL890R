@@ -61,7 +61,7 @@ flights |>
 
 #For read_delim() a delimeter needs to be specified along with a quote argument.
 #The delimeter in this case is ",". The read_cvs() supports the quote argument 
-#anf could be listed as the following code:
+#and could be listed as the following code:
 
 read_csv(x, quote = "'")
 
@@ -96,7 +96,34 @@ read_csv("a;b\n1;3")
 #";" instead of ",".
 
 #6. Practice referring to non-syntactic names in the following data frame by:
-#Extracting the variable called 1.
-#Plotting a scatterplot of 1 vs. 2.
-#Creating a new column called 3, which is 2 divided by 1.
-#Renaming the columns to one, two, and three.
+
+library(tidyverse)
+
+annoying <- tibble(
+  `1` = 1:10,
+  `2` = `1` * 2 + rnorm(length(`1`))
+)
+
+# a. Extracting the variable called 1.
+
+annoying |> 
+  select(`1`)
+
+# b. Plotting a scatterplot of 1 vs. 2.
+
+ggplot(annoying, aes(`1`, `2`))
+
+# c. Creating a new column called 3, which is 2 divided by 1.
+
+annoying2 <-
+  annoying |> 
+  mutate(`3` = `2`/`1`)
+
+# d. Renaming the columns to one, two, and three.
+
+annoying2 |> 
+  rename(
+    one = `1`,
+    two = `2`,
+    three = `3`
+  )
