@@ -1,0 +1,111 @@
+Names: Yvonne Ma, Diontre Davis, and Jimmy Hattier
+#Exercise 9.4.1 
+
+
+library(tidyverse)
+
+#Exercise 9.4.1 
+
+#1 What happens if you facet on a continuous variable?
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  facet_grid(. ~ cty)
+
+#The continuous variable will end up being changed to a categorical variable
+#The plot will end up containing a facet for each distinct value.
+
+#2. What do the empty cells in the plot above with facet_grid(drv ~ cyl) mean? 
+#Run the following code. How do they relate to the resulting plot?
+
+ggplot(mpg) + 
+  geom_point(aes(x = drv, y = cyl))
+
+ggplot(data = mpg) +
+  geom_point(aes(x = hwy, y = cty)) +
+  facet_grid(drv ~ cyl)
+
+#The empty cells in the facet_grid plot are a combination of drv and cyl 
+#variables that have no observations. 
+
+#3. What plots does the following code make? What does . do?
+
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ .)
+
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy)) +
+  facet_grid(. ~ cyl)
+
+#The code facet_grid(.~cyl) will facet the codes on the x-axis, while 
+#facet_grid(drvg~.) will facet the codes on the y-axis.
+
+#4. Take the first faceted plot in this section:
+
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+
+ggplot(data = mpg) +
+  geom_point(aes(x = displ, y = hwy, color = class))
+
+#What are the advantages to using faceting instead of the color aesthetic?
+#What are the disadvantages? How might the balance change if you had a larger
+#dataset?
+
+#When using faceting over the color aesthetic the faceting the number of 
+#categories and points increase. When using coloring there will be an
+#overlapping of points with different colors making it hard to visually
+#pick out patterns of different categories. 
+
+#Disadvantages of using faceting over the color aesthetic is that it will be 
+#difficult to compare values between categories since each observation 
+#for each category are on different plots. 
+
+#If a larger data set is used and the number of categories increases, then
+#the differences between colors decreases. This keeps points affected by 
+#the color of each category in the color aesthetic less visually distinct.
+
+#5.Read ?facet_wrap. What does nrow do? What does ncol do? 
+#What other options control the layout of the individual panels? 
+#Why doesn’t facet_grid() have nrow and ncol arguments?
+
+#Ncol and Nrow determines the number or rows or columns to use when making
+#facets.This helps since facet_wrap only facets one variable.
+#Facet_grid doesn't have nrow or ncol because these arguments are not 
+#necessary. The number of unique values of variables are instead used to 
+#determine the number of rows and columns. 
+
+#6. Which of the following plots makes it easier to compare engine size (displ) 
+#across cars with different drive trains? What does this say about when to
+#place a faceting variable across rows or columns?
+
+ggplot(mpg, aes(x = displ)) + 
+  geom_histogram() + 
+  facet_grid(drv ~ .)
+
+ggplot(mpg, aes(x = displ)) + 
+  geom_histogram() +
+  facet_grid(. ~ drv)
+
+#The facet_grd(.~ drv) plot makes it easier to compare engine size across
+#cars with different trains.This plot shows that it is easier to read 
+#and determine a more accurate count using the facet_grid(. ~ drv) when
+# faceting variables across rows or columns.
+
+#7. Recreate the following plot using facet_wrap() instead of facet_grid().
+#How do the positions of the facet labels change?
+
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ .)
+
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy)) +
+  facet_wrap(drv ~ .)
+
+#When the facet_grid(drv ~ .) is used the labels there more emphasis on the 
+#coding to expand the view x-axis to see the variables faceted. In 
+#facet_wrap(drv ~.) there is a vertical expansion of the plot to see how
+#the vairiables were faceted on the y-axis. 
