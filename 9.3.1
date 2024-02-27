@@ -1,0 +1,64 @@
+# 9.3.1 Exercises
+# Jimmy Hattier, Diontre Davis, and Yvonne Ma
+
+library(tidyverse)
+
+# 1) What geom would you use to draw a line chart? A boxplot?
+# A histogram? An area chart?
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_line()
+
+ggplot(mpg, aes(x = hwy, group = 1) +
+  geom_boxplot()
+
+ggplot(mpg, aes(x = hwy)) +
+  geom_histogram (binwidth = 1)
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_area()
+  
+
+# 2) Earlier in this chapter we used show.legend without explaining it:
+  
+  ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_smooth(aes(color = drv), show.legend = FALSE)
+
+# What does show.legend = FALSE do here? What happens if you remove it?
+# Why do you think we used it earlier?
+  
+# show.legend = FALSE removes the legend from the graph display. If you remove
+# it, the legend will reappear because the default argument is = TRUE.
+# This argument was used earlier because the drive types were already made
+# clear by the y-axis, making a legend redundant.
+
+# 3) What does the se argument to geom_smooth() do?
+
+# The se argument in geom_smooth shows the confidence interval (standard error)
+# around the line of best fit when set to TRUE, which is the default.
+  
+# 4) Recreate the R code necessary to generate the following graphs.
+# Note that wherever a categorical variable is used in the plot, it’s drv.
+  
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth(aes(group = drv), se = FALSE)
+
+ggplot(mpg, aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth(aes(group = drv), se = FALSE)
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = drv)) +
+  geom_smooth(se = FALSE)
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = drv)) +
+  geom_smooth(aes(group = drv), se = FALSE)
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(color = "white", shape = 21, stroke = 2, aes(fill = drv))
