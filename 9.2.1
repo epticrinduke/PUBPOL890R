@@ -1,0 +1,37 @@
+# 9.2.1 Exercises
+# Jimmy Hattier, Diontre Davis, and Yvonne Ma
+
+library(tidyverse)
+
+# 1) Create a scatterplot of hwy vs. displ where the points
+# are pink filled in triangles.
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(shape = 17, color = "pink")
+
+# 2) Why did the following code not result in a plot with blue points?
+  
+  ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy, color = "blue""))
+  
+# This applies a label to color rather than a color because it's
+# under the aes() argument. If you want the color to be blue, code it like this:
+
+  ggplot(mpg) + 
+  geom_point(color = "blue", aes(x = displ, y = hwy))  
+
+# 3) What does the stroke aesthetic do? What shapes does it work with?
+# (Hint: use ?geom_point)
+
+# The stroke aesthetic changes the thickness of the borders of the point shape.
+# It works with all shapes with a border.
+
+# 4) What happens if you map an aesthetic to something other than
+# a variable name, like aes(color = displ < 5)?
+# Note, you’ll also need to specify x and y.
+
+  ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy, color = displ < 5))
+  
+# The graph creates a true-false color scheme to visualize whether the variable
+# meets the named criteria.
