@@ -1,0 +1,83 @@
+#9.5.1
+
+#1.What is the default geom associated with stat_summary()? How could you
+#rewrite the previous plot to use that geom function instead of the stat 
+#function?
+
+#The default geom is geom_pointrange().
+
+diamonds |>
+  group_by(cut) |>
+  summarize(
+    lower = min(depth),
+    upper = max(depth),
+    midpoint = median(depth)
+  ) |>
+  ggplot(aes(x = cut, y = midpoint)) +
+  geom_pointrange(aes(ymin = lower, ymax = upper))
+
+#2.What does geom_col() do? How is it different from geom_bar()?
+
+#geom_col() plots the heights of the bars to represent values in the
+#data, and geom_bar() first calculates the heights from data and 
+#then plots them. geom_col() can be used to make a bar plot from
+#a data frame that represents a frequency table, while geom_bar() 
+#can be used to make a bar plot from a data frame where each row 
+#is an observation
+
+#3.Most geoms and stats come in pairs that are almost always used
+#in concert. Make a list of all the pairs. What do they have in
+#common? (Hint: Read through the documentation.)
+
+#geom_bar() stat_count()
+#geom_bin2d()	stat_bin_2d()
+#geom_boxplot()	stat_boxplot()
+#geom_contour_filled()	stat_contour_filled()
+#geom_contour()	stat_contour()
+#geom_count()	stat_sum()
+#geom_density_2d()	stat_density_2d()
+#geom_density()	stat_density()
+#geom_dotplot()	stat_bindot()
+#geom_function()	stat_function()
+#geom_sf()	stat_sf()
+#geom_sf()	stat_sf()
+#geom_smooth()	stat_smooth()
+#geom_violin()	stat_ydensity()
+#geom_hex()	stat_bin_hex()
+#geom_qq_line()	stat_qq_line()
+#geom_qq()	stat_qq()
+#geom_quantile()	stat_quantile()
+
+#4.What variables does stat_smooth() compute? What arguments control its
+#behavior?
+
+#stat_smooth() computes the following variables:
+#y or x: Predicted value
+#ymin or xmin: Lower pointwise confidence interval around the mean
+#ymax or xmax: Upper pointwise confidence interval around the mean
+#se: Standard erro
+
+#5.In our proportion bar chart, we needed to set group = 1. Why? 
+#In other words, what is the problem with these two graphs?
+
+ggplot(diamonds, aes(x = cut, y = after_stat(prop))) + 
+  geom_bar()
+ggplot(diamonds, aes(x = cut, fill = color, y = after_stat(prop))) + 
+  geom_bar()
+
+#In the first pair of plots, we see that setting group = 1 results in
+#the marginal proportions of cuts being plotted. In the second pair of
+#plots, setting group = color results in the proportions of colors
+#within each cut being plotted
+
+# one variable
+ggplot(diamonds, aes(x = cut, y = after_stat(prop))) + 
+  geom_bar()
+ggplot(diamonds, aes(x = cut, y = after_stat(prop), group = 1)) + 
+  geom_bar()
+
+# two variables
+ggplot(diamonds, aes(x = cut, fill = color, y = after_stat(prop))) + 
+  geom_bar()
+ggplot(diamonds, aes(x = cut, fill = color, y = after_stat(prop), group = color)) + 
+  geom_bar()
