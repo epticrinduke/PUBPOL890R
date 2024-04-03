@@ -1,0 +1,40 @@
+#Exercise Set 6
+#10.4.1
+
+#1) What happens to missing values in a histogram? What happens to missing values in a bar chart? Why is there a difference in how missing values are handled
+#in histograms and bar charts?
+
+#Missing values are removed when the number of observations in each bin are calculated. 
+See the warning message: Removed 9 rows containing non-finite values (stat_bin)
+diamonds2 <- diamonds %>%
+  mutate(y = ifelse(y < 3 | y > 20, NA, y))
+ggplot(diamonds2, aes(x = y)) +
+  geom_histogram()
+#In the geom_bar() function, NA is treated as another category. The x aesthetic in geom_bar() requires a discrete (categorical) variable, and missing values
+#act like another category.
+diamonds %>%
+  mutate(cut = if_else(runif(n()) < 0.1, NA_character_, as.character(cut))) %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = cut))
+#In a histogram, the x aesthetic variable needs to be numeric, and stat_bin() groups the observations by ranges into bins. 
+#Since the numeric value of the NA observations is unknown, they cannot be placed in a particular bin, and are dropped.
+
+#2) What does na.rm = TRUE do in mean() and sum()?
+
+#This option removes NA values from the vector prior to calculating the mean and sum.
+mean(c(0, 1, 2, NA), na.rm = TRUE)
+sum(c(0, 1, 2, NA), na.rm = TRUE)
+
+#3) Recreate the frequency plot of scheduled_dep_time colored by whether the flight was cancelled or not. Also facet by the cancelled variable. 
+#Experiment with different values of the scales variable in the faceting function to mitigate the effect of more non-cancelled flights than 
+#cancelled flights.
+
+nycflights13::flights %>%
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + sched_min / 60
+  ) %>%
+  ggplot() +
+  geom_boxplot(mapping = aes(y = sched_dep_time, x = cancelled))
