@@ -1,0 +1,52 @@
+# 11.2.1 Exercises
+
+# Diontre Davis, Yvonne Ma, and Jimmy Ragan Hattier
+
+library(tidyverse)
+library(scales)
+library(ggrepel)
+library(patchwork)
+
+# 1. Create one plot on the fuel economy data with customized title, subtitle,
+# caption, x, y, and color labels.
+
+ggplot(mpg, aes(x = cyl, y = hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  labs(
+    x = "Number of cylinders in engine",
+    y = "Highway fuel economy (mpg)",
+    color = "Type of vehicle",
+    title = "Fuel economy decreases with a more powerful engine",
+    subtitle = "Most 8-cylinder vehicles are SUVs or subcompact vehicles,
+    showing a need to power big vehicles or a desire to drive for sport",
+    caption = "Data from fueleconomy.gov"
+  )
+
+# 2. Recreate the following plot using the fuel economy data. Note that both
+# the colors and shapes of points vary by type of drive train.
+
+ggplot(mpg, aes(x = cty, y = hwy)) +
+  geom_point(aes(color = drv, shape = drv)) +
+  labs(
+    x = "City MPG",
+    y = "Highway MPG",
+    color = "Type of drive train",
+    shape = "Type of drive train"
+  )
+
+# 3. Take an exploratory graphic that you've created in the last month, and add
+# informative titles to make it easier for others to understand.
+
+# From 9.3.1 Exercise:
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(color = "white", shape = 21, stroke = 2, aes(fill = drv)) +
+  labs(
+    x = "Engine displacement in liters",
+    y = "Highway MPG",
+    color = "Type of drive train",
+    shape = "Type of drive train",
+    title = "Fuel economy decreases as engine size increases",
+    subtitle = "4-wheel drive cars decrease fuel economy",
+    caption = "Data from fueleconomy.gov"
+  )
