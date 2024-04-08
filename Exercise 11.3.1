@@ -1,0 +1,86 @@
+#Team Members: Diontre Davis, Yvonne Ma, and Jimmy Hattier
+
+#Exercise 11.3.1
+
+library(tidyverse)
+library("modelr")
+library("lubridate")
+
+#1. Use geom_text() with infinite positions to place text at the four corners 
+#of the plot.
+
+label <- tribble(
+  ~displ, ~hwy, ~label, ~vjust, ~hjust,
+  Inf, Inf, "Top right", "top", "right",
+  Inf, -Inf, "Bottom right", "bottom", "right",
+  -Inf, Inf, "Top left", "top", "left",
+  -Inf, -Inf, "Bottom left", "bottom", "left"
+)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  geom_text(aes(label = label, vjust = vjust, hjust = hjust), data = label)
+
+#2. Use annotate() to add a point geom in the middle of your last plot without
+#having to create a tibble. Customize the shape, size, or color of the point.
+
+ggplot (mpg, aes(displ, hwy)) + geom_point()
+
+#3.How do labels with geom_text() interact with faceting? How can you add a 
+#label to a single facet? How can you put a different label in each facet?'
+#(Hint: Think about the dataset that is being passed to geom_text().)
+
+#Normally, if the facet variable isn't specified then the text is drawn in
+#full facets. In order to draw the label in a single facet, you need to add
+#a column to the label data frame with the value of faceting variables to 
+#draw from.When it comes to adding a different label to each facet, the 
+#facetting variables need to be assigned when you write add the tibble
+#when you are using the geo_text command.
+
+label <- tibble(
+  displ = Inf,
+  hwy = Inf,
+  class = "2seater",
+  label = "Increasing engine size is \nrelated to decreasing fuel economy."
+)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  geom_text(aes(label = label),
+            data = label, vjust = "top", hjust = "right",
+            size = 2
+  ) +
+  facet_wrap(~class)
+
+
+label <- tibble(
+  displ = Inf,
+  hwy = Inf,
+  class = unique(mpg$class),
+  label = str_c("Label for ", class)
+)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  geom_text(aes(label = label),
+            data = label, vjust = "top", hjust = "right",
+            size = 3
+  ) +
+  facet_wrap(~class)
+
+
+
+#4. What arguments to geom_label() control the appearance of the background box?
+
+#The arguments that control the appearance of the background are label.padding, 
+#label.r, and label.size.
+
+#5. What are the four arguments to arrow()? How do they work? Create a series 
+#of plots that demonstrate the most important options.
+
+#Below are the four arguments to arrow(): 
+
+#angle - angle of arrow head
+#length - length of the arrow head
+#ends - ends of the line to draw arrow head
+#type - "open" or "close": whether the arrow head is a closed or open triangle
