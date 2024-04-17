@@ -1,0 +1,302 @@
+# 890 Group Project
+# Diontre Davis, Jimmy Hattier, and Yvonne Ma
+# 04/17/2024
+
+# WORK SPACE SETUP
+# This should be the folder that contains the "301.10_enrollment_degrees.xlsx" file
+
+setwd("C:/Users/eptic/OneDrive - Duke University/Spring 2024 Classes/890 R/Group Project/Data")
+
+library(tidyverse)
+library(scales)
+library(ggrepel)
+library(patchwork)
+library(readxl)
+library(writexl)
+
+# LOAD SPREADSHEETS INTO WORK SPACE
+
+total_enrollment <- read_excel("301.10_enrollment_degrees.xlsx", sheet = "enrollment_total")
+male_enrollment <- read_excel("301.10_enrollment_degrees.xlsx", sheet = "enrollment_male")
+male_enrollment_proportions <- read_excel("301.10_enrollment_degrees.xlsx", sheet = "enrollment_prop_male")
+total_degrees <- read_excel("301.10_enrollment_degrees.xlsx", sheet = "degrees_total")
+male_degrees <- read_excel("301.10_enrollment_degrees.xlsx", sheet = "degrees_male")
+male_degrees_proportions <- read_excel("301.10_enrollment_degrees.xlsx", sheet = "degrees_prop_male")
+
+# CREATE CHANGE VARIABLES
+
+# CHANGES IN TOTAL POPULATION
+
+# Changes in enrollment numbers from year to year
+total_enroll_changes <-
+  total_enrollment |>
+  mutate(enroll_change_total = total - lag(total)) |> 
+  mutate(enroll_change_4year = total_4year - lag(total_4year)) |>
+  mutate(enroll_change_2year = total_2year - lag(total_2year)) |> 
+  mutate(enroll_change_lessthan2 = total_lessthan2 - lag(total_lessthan2)) |> 
+  mutate(enroll_change_degree = total_degree - lag(total_degree)) |> 
+  mutate(enroll_change_degree_public = total_degree_public - lag(total_degree_public)) |> 
+  mutate(enroll_change_degree_nonprofit = total_degree_nonprofit - lag(total_degree_nonprofit)) |> 
+  mutate(enroll_change_degree_forprofit = total_degree_forprofit - lag(total_degree_forprofit)) |> 
+  mutate(enroll_change_nondegree = total_nondegree - lag(total_nondegree)) |> 
+  mutate(enroll_change_nondegree_public = total_nondegree_public - lag(total_nondegree_public)) |> 
+  mutate(enroll_change_nondegree_nonprofit = total_nondegree_nonprofit - lag(total_nondegree_nonprofit)) |> 
+  mutate(enroll_change_nondegree_forprofit = total_nondegree_forprofit - lag(total_nondegree_forprofit))
+
+# Percent change in enrollment from year to year
+percent_total_enroll_changes <-
+  total_enrollment |>
+  mutate(enroll_percent_change_total = (total - lag(total))/lag(total) * 100) |> 
+  mutate(enroll_percent_change_4year = (total_4year - lag(total_4year))/lag(total_4year) * 100) |>
+  mutate(enroll__percent_change_2year = (total_2year - lag(total_2year))/lag(total_2year) * 100) |> 
+  mutate(enroll_percent_change_lessthan2 = (total_lessthan2 - lag(total_lessthan2))/lag(total_lessthan2) * 100) |> 
+  mutate(enroll_percent_change_degree = (total_degree - lag(total_degree))/lag(total_degree) * 100) |> 
+  mutate(enroll_percent_change_degree_public = (total_degree_public - lag(total_degree_public))/lag(total_degree_public) * 100) |> 
+  mutate(enroll_percent_change_degree_nonprofit = (total_degree_nonprofit - lag(total_degree_nonprofit))/lag(total_degree_nonprofit) * 100) |> 
+  mutate(enroll_percent_change_degree_forprofit = (total_degree_forprofit - lag(total_degree_forprofit))/lag(total_degree_forprofit) * 100) |> 
+  mutate(enroll_percent_change_nondegree = (total_nondegree - lag(total_nondegree))/lag(total_nondegree) * 100) |> 
+  mutate(enroll_percent_change_nondegree_public = (total_nondegree_public - lag(total_nondegree_public))/lag(total_nondegree_public) * 100) |> 
+  mutate(enroll_percent_change_nondegree_nonprofit = (total_nondegree_nonprofit - lag(total_nondegree_nonprofit))/lag(total_nondegree_nonprofit) * 100) |> 
+  mutate(enroll_percent_change_nondegree_forprofit = (total_nondegree_forprofit - lag(total_nondegree_forprofit))/lag(total_nondegree_forprofit) * 100)
+
+# Size of the difference between enrollment numbers of different institution types
+institution_type_enroll_differences <-
+  total_enrollment |> 
+  mutate(total_public = total_degree_public + total_nondegree_public) |> 
+  mutate(total_private = total_degree_nonprofit + total_degree_forprofit + total_nondegree_nonprofit + total_nondegree_forprofit) |> 
+  mutate(enroll_4year_2year = abs(total_4year - total_2year)) |> 
+  mutate(enroll_2year_lessthan2 = abs(total_2year - total_lessthan2)) |> 
+  mutate(enroll_degree_nondegree = abs(total_degree - total_nondegree)) |> 
+  mutate(enroll_public_private = abs(total_public - total_private))
+
+# Changes in degree conferral numbers from year to year
+total_degree_changes <-
+  total_degrees |> 
+  mutate(degree_change_total = total - lag(total)) |> 
+  mutate(degree_change_certificate = total_certificate - lag(total_certificate)) |> 
+  mutate(degree_change_associates = total_associates - lag(total_associates)) |> 
+  mutate(degree_change_bachelors = total_bachelors - lag(total_bachelors)) |> 
+  mutate(degree_change_masters = total_masters - lag(total_masters)) |> 
+  mutate(degree_change_doctors = total_doctors - lag(total_doctors)) |> 
+  mutate(degree_change_degree = total_degree - lag(total_degree)) |> 
+  mutate(degree_change_degree_public = total_degree_public - lag(total_degree_public)) |> 
+  mutate(degree_change_degree_nonprofit = total_degree_nonprofit - lag(total_degree_nonprofit)) |> 
+  mutate(degree_change_degree_forprofit = total_degree_forprofit - lag(total_degree_forprofit)) |> 
+  mutate(degree_change_nondegree = total_nondegree - lag(total_nondegree)) |> 
+  mutate(degree_change_nondegree_public = total_nondegree_public - lag(total_nondegree_public)) |> 
+  mutate(degree_change_nondegree_nonprofit = total_nondegree_nonprofit - lag(total_nondegree_nonprofit)) |> 
+  mutate(degree_change_nondegree_forprofit = total_nondegree_forprofit - lag(total_nondegree_forprofit))
+
+# Percent change in degree conferral from year to year
+percent_total_degree_changes <-
+  total_degrees |> 
+  mutate(degree_percent_change_total = (total - lag(total))/lag(total) * 100) |> 
+  mutate(degree_percent_change_certificate = (total_certificate - lag(total_certificate))/lag(total_certificate) * 100) |> 
+  mutate(degree_percent_change_associates = (total_associates - lag(total_associates))/lag(total_associates) * 100) |> 
+  mutate(degree_percent_change_bachelors = (total_bachelors - lag(total_bachelors))/lag(total_bachelors) * 100) |> 
+  mutate(degree_percent_change_masters = (total_masters - lag(total_masters))/lag(total_masters) * 100) |> 
+  mutate(degree_percent_change_doctors = (total_doctors - lag(total_doctors))/lag(total_doctors) * 100) |> 
+  mutate(degree_percent_change_degree = (total_degree - lag(total_degree))/lag(total_degree) * 100) |> 
+  mutate(degree_percent_change_degree_public = (total_degree_public - lag(total_degree_public))/lag(total_degree_public) * 100) |> 
+  mutate(degree_percent_change_degree_nonprofit = (total_degree_nonprofit - lag(total_degree_nonprofit))/lag(total_degree_nonprofit) * 100) |> 
+  mutate(degree_percent_change_degree_forprofit = (total_degree_forprofit - lag(total_degree_forprofit))/lag(total_degree_forprofit) * 100) |> 
+  mutate(degree_percent_change_nondegree = (total_nondegree - lag(total_nondegree))/lag(total_nondegree) * 100) |> 
+  mutate(degree_percent_change_nondegree_public = (total_nondegree_public - lag(total_nondegree_public))/lag(total_nondegree_public) * 100) |> 
+  mutate(degree_percent_change_nondegree_nonprofit = (total_nondegree_nonprofit - lag(total_nondegree_nonprofit))/lag(total_nondegree_nonprofit) * 100) |> 
+  mutate(degree_percent_change_nondegree_forprofit = (total_nondegree_forprofit - lag(total_nondegree_forprofit))/lag(total_nondegree_forprofit) * 100)
+
+# Size of the difference between degree conferral numbers of different institution types
+institution_type_degree_differences <-
+  total_degrees |> 
+  mutate(total_public = total_degree_public + total_nondegree_public) |> 
+  mutate(total_private = total_degree_nonprofit + total_degree_forprofit + total_nondegree_nonprofit + total_nondegree_forprofit) |> 
+  mutate(total_advanced = total_masters + total_doctors) |> 
+  mutate(degree_certificate_associates = abs(total_certificate - total_associates)) |> 
+  mutate(degree_associates_bachelors = abs(total_bachelors - total_associates)) |> 
+  mutate(degree_bachelors_advanced = abs(total_advanced - total_bachelors)) |> 
+  mutate(degree_degree_nondegree = abs(total_degree - total_nondegree)) |> 
+  mutate(degree_public_private = abs(total_public - total_private))
+
+# CHANGES IN MALE POPULATION
+
+# Changes in male enrollment numbers from year to year
+male_enroll_changes <-
+  male_enrollment |>
+  mutate(enroll_change_total = male_total - lag(male_total)) |> 
+  mutate(enroll_change_4year = male_4year - lag(male_4year)) |>
+  mutate(enroll_change_2year = male_2year - lag(male_2year)) |> 
+  mutate(enroll_change_lessthan2 = male_lessthan2 - lag(male_lessthan2)) |> 
+  mutate(enroll_change_degree = male_degree - lag(male_degree)) |> 
+  mutate(enroll_change_degree_public = male_degree_public - lag(male_degree_public)) |> 
+  mutate(enroll_change_degree_nonprofit = male_degree_nonprofit - lag(male_degree_nonprofit)) |> 
+  mutate(enroll_change_degree_forprofit = male_degree_forprofit - lag(male_degree_forprofit)) |> 
+  mutate(enroll_change_nondegree = male_nondegree - lag(male_nondegree)) |> 
+  mutate(enroll_change_nondegree_public = male_nondegree_public - lag(male_nondegree_public)) |> 
+  mutate(enroll_change_nondegree_nonprofit = male_nondegree_nonprofit - lag(male_nondegree_nonprofit)) |> 
+  mutate(enroll_change_nondegree_forprofit = male_nondegree_forprofit - lag(male_nondegree_forprofit))
+
+# Percent change in male enrollment from year to year
+percent_male_enroll_changes <-
+  male_enrollment |>
+  mutate(enroll_percent_change_total = (male_total - lag(male_total))/lag(male_total) * 100) |> 
+  mutate(enroll_percent_change_4year = (male_4year - lag(male_4year))/lag(male_4year) * 100) |>
+  mutate(enroll__percent_change_2year = (male_2year - lag(male_2year))/lag(male_2year) * 100) |> 
+  mutate(enroll_percent_change_lessthan2 = (male_lessthan2 - lag(male_lessthan2))/lag(male_lessthan2) * 100) |> 
+  mutate(enroll_percent_change_degree = (male_degree - lag(male_degree))/lag(male_degree) * 100) |> 
+  mutate(enroll_percent_change_degree_public = (male_degree_public - lag(male_degree_public))/lag(male_degree_public) * 100) |> 
+  mutate(enroll_percent_change_degree_nonprofit = (male_degree_nonprofit - lag(male_degree_nonprofit))/lag(male_degree_nonprofit) * 100) |> 
+  mutate(enroll_percent_change_degree_forprofit = (male_degree_forprofit - lag(male_degree_forprofit))/lag(male_degree_forprofit) * 100) |> 
+  mutate(enroll_percent_change_nondegree = (male_nondegree - lag(male_nondegree))/lag(male_nondegree) * 100) |> 
+  mutate(enroll_percent_change_nondegree_public = (male_nondegree_public - lag(male_nondegree_public))/lag(male_nondegree_public) * 100) |> 
+  mutate(enroll_percent_change_nondegree_nonprofit = (male_nondegree_nonprofit - lag(male_nondegree_nonprofit))/lag(male_nondegree_nonprofit) * 100) |> 
+  mutate(enroll_percent_change_nondegree_forprofit = (male_nondegree_forprofit - lag(male_nondegree_forprofit))/lag(male_nondegree_forprofit) * 100)
+
+# Size of the difference between male enrollment numbers of different institution types
+institution_type_male_enroll_differences <-
+  male_enrollment |> 
+  mutate(male_public = male_degree_public + male_nondegree_public) |> 
+  mutate(male_private = male_degree_nonprofit + male_degree_forprofit + male_nondegree_nonprofit + male_nondegree_forprofit) |> 
+  mutate(enroll_male_4year_2year = abs(male_4year - male_2year)) |> 
+  mutate(enroll_male_2year_lessthan2 = abs(male_2year - male_lessthan2)) |> 
+  mutate(enroll_male_degree_nondegree = abs(male_degree - male_nondegree)) |> 
+  mutate(enroll_male_public_private = abs(male_public - male_private))
+
+# Changes in male degree conferral numbers from year to year
+male_degree_changes <-
+  male_degrees |> 
+  mutate(degree_change_total = male_total - lag(male_total)) |> 
+  mutate(degree_change_certificate = male_certificate - lag(male_certificate)) |> 
+  mutate(degree_change_associates = male_associates - lag(male_associates)) |> 
+  mutate(degree_change_bachelors = male_bachelors - lag(male_bachelors)) |> 
+  mutate(degree_change_masters = male_masters - lag(male_masters)) |> 
+  mutate(degree_change_doctors = male_doctors - lag(male_doctors)) |> 
+  mutate(degree_change_degree = male_degree - lag(male_degree)) |> 
+  mutate(degree_change_degree_public = male_degree_public - lag(male_degree_public)) |> 
+  mutate(degree_change_degree_nonprofit = male_degree_nonprofit - lag(male_degree_nonprofit)) |> 
+  mutate(degree_change_degree_forprofit = male_degree_forprofit - lag(male_degree_forprofit)) |> 
+  mutate(degree_change_nondegree = male_nondegree - lag(male_nondegree)) |> 
+  mutate(degree_change_nondegree_public = male_nondegree_public - lag(male_nondegree_public)) |> 
+  mutate(degree_change_nondegree_nonprofit = male_nondegree_nonprofit - lag(male_nondegree_nonprofit)) |> 
+  mutate(degree_change_nondegree_forprofit = male_nondegree_forprofit - lag(male_nondegree_forprofit))
+
+# Percent change in degree conferral from year to year
+percent_male_degree_changes <-
+  male_degrees |> 
+  mutate(degree_percent_change_total = (male_total - lag(male_total))/lag(male_total) * 100) |> 
+  mutate(degree_percent_change_certificate = (male_certificate - lag(male_certificate))/lag(male_certificate) * 100) |> 
+  mutate(degree_percent_change_associates = (male_associates - lag(male_associates))/lag(male_associates) * 100) |> 
+  mutate(degree_percent_change_bachelors = (male_bachelors - lag(male_bachelors))/lag(male_bachelors) * 100) |> 
+  mutate(degree_percent_change_masters = (male_masters - lag(male_masters))/lag(male_masters) * 100) |> 
+  mutate(degree_percent_change_doctors = (male_doctors - lag(male_doctors))/lag(male_doctors) * 100) |> 
+  mutate(degree_percent_change_degree = (male_degree - lag(male_degree))/lag(male_degree) * 100) |> 
+  mutate(degree_percent_change_degree_public = (male_degree_public - lag(male_degree_public))/lag(male_degree_public) * 100) |> 
+  mutate(degree_percent_change_degree_nonprofit = (male_degree_nonprofit - lag(male_degree_nonprofit))/lag(male_degree_nonprofit) * 100) |> 
+  mutate(degree_percent_change_degree_forprofit = (male_degree_forprofit - lag(male_degree_forprofit))/lag(male_degree_forprofit) * 100) |> 
+  mutate(degree_percent_change_nondegree = (male_nondegree - lag(male_nondegree))/lag(male_nondegree) * 100) |> 
+  mutate(degree_percent_change_nondegree_public = (male_nondegree_public - lag(male_nondegree_public))/lag(male_nondegree_public) * 100) |> 
+  mutate(degree_percent_change_nondegree_nonprofit = (male_nondegree_nonprofit - lag(male_nondegree_nonprofit))/lag(male_nondegree_nonprofit) * 100) |> 
+  mutate(degree_percent_change_nondegree_forprofit = (male_nondegree_forprofit - lag(male_nondegree_forprofit))/lag(male_nondegree_forprofit) * 100)
+
+# Size of the difference between degree conferral numbers of different institution types
+institution_type_male_degree_differences <-
+  male_degrees |> 
+  mutate(male_public = male_degree_public + male_nondegree_public) |> 
+  mutate(male_private = male_degree_nonprofit + male_degree_forprofit + male_nondegree_nonprofit + male_nondegree_forprofit) |> 
+  mutate(male_advanced = male_masters + male_doctors) |> 
+  mutate(degree_certificate_associates = abs(male_certificate - male_associates)) |> 
+  mutate(degree_associates_bachelors = abs(male_bachelors - male_associates)) |> 
+  mutate(degree_bachelors_advanced = abs(male_advanced - male_bachelors)) |> 
+  mutate(degree_degree_nondegree = abs(male_degree - male_nondegree)) |> 
+  mutate(degree_public_private = abs(male_public - male_private))
+
+# CHANGES IN PROPORTION OF MALE POPULATION
+
+# Changes in male enrollment proportions from year to year
+male_proportion_enroll_changes <-
+  male_enrollment_proportions |>
+  mutate(enroll_change_total = prop_male_total - lag(prop_male_total)) |> 
+  mutate(enroll_change_4year = prop_male_4year - lag(prop_male_4year)) |>
+  mutate(enroll_change_2year = prop_male_2year - lag(prop_male_2year)) |> 
+  mutate(enroll_change_lessthan2 = prop_male_lessthan2 - lag(prop_male_lessthan2)) |> 
+  mutate(enroll_change_degree = prop_male_degree - lag(prop_male_degree)) |> 
+  mutate(enroll_change_degree_public = prop_male_degree_public - lag(prop_male_degree_public)) |> 
+  mutate(enroll_change_degree_nonprofit = prop_male_degree_nonprofit - lag(prop_male_degree_nonprofit)) |> 
+  mutate(enroll_change_degree_forprofit = prop_male_degree_forprofit - lag(prop_male_degree_forprofit)) |> 
+  mutate(enroll_change_nondegree = prop_male_nondegree - lag(prop_male_nondegree)) |> 
+  mutate(enroll_change_nondegree_public = prop_male_nondegree_public - lag(prop_male_nondegree_public)) |> 
+  mutate(enroll_change_nondegree_nonprofit = prop_male_nondegree_nonprofit - lag(prop_male_nondegree_nonprofit)) |> 
+  mutate(enroll_change_nondegree_forprofit = prop_male_nondegree_forprofit - lag(prop_male_nondegree_forprofit))
+
+# Percent change in male enrollment proportions from year to year
+percent_male_proportion_enroll_changes <-
+  male_enrollment_proportions |>
+  mutate(enroll_percent_change_total = (prop_male_total - lag(prop_male_total))/lag(prop_male_total) * 100) |> 
+  mutate(enroll_percent_change_4year = (prop_male_4year - lag(prop_male_4year))/lag(prop_male_4year) * 100) |>
+  mutate(enroll__percent_change_2year = (prop_male_2year - lag(prop_male_2year))/lag(prop_male_2year) * 100) |> 
+  mutate(enroll_percent_change_lessthan2 = (prop_male_lessthan2 - lag(prop_male_lessthan2))/lag(prop_male_lessthan2) * 100) |> 
+  mutate(enroll_percent_change_degree = (prop_male_degree - lag(prop_male_degree))/lag(prop_male_degree) * 100) |> 
+  mutate(enroll_percent_change_degree_public = (prop_male_degree_public - lag(prop_male_degree_public))/lag(prop_male_degree_public) * 100) |> 
+  mutate(enroll_percent_change_degree_nonprofit = (prop_male_degree_nonprofit - lag(prop_male_degree_nonprofit))/lag(prop_male_degree_nonprofit) * 100) |> 
+  mutate(enroll_percent_change_degree_forprofit = (prop_male_degree_forprofit - lag(prop_male_degree_forprofit))/lag(prop_male_degree_forprofit) * 100) |> 
+  mutate(enroll_percent_change_nondegree = (prop_male_nondegree - lag(prop_male_nondegree))/lag(prop_male_nondegree) * 100) |> 
+  mutate(enroll_percent_change_nondegree_public = (prop_male_nondegree_public - lag(prop_male_nondegree_public))/lag(prop_male_nondegree_public) * 100) |> 
+  mutate(enroll_percent_change_nondegree_nonprofit = (prop_male_nondegree_nonprofit - lag(prop_male_nondegree_nonprofit))/lag(prop_male_nondegree_nonprofit) * 100) |> 
+  mutate(enroll_percent_change_nondegree_forprofit = (prop_male_nondegree_forprofit - lag(prop_male_nondegree_forprofit))/lag(prop_male_nondegree_forprofit) * 100)
+
+# Size of the difference between male enrollment proportions of different institution types
+institution_type_male_proportion_enroll_differences <-
+  male_enrollment_proportions |> 
+  mutate(prop_male_public = prop_male_degree_public + prop_male_nondegree_public) |> 
+  mutate(prop_male_private = prop_male_degree_nonprofit + prop_male_degree_forprofit + prop_male_nondegree_nonprofit + prop_male_nondegree_forprofit) |> 
+  mutate(enroll_male_4year_2year = abs(prop_male_4year - prop_male_2year)) |> 
+  mutate(enroll_male_2year_lessthan2 = abs(prop_male_2year - prop_male_lessthan2)) |> 
+  mutate(enroll_male_degree_nondegree = abs(prop_male_degree - prop_male_nondegree)) |> 
+  mutate(enroll_male_public_private = abs(prop_male_public - prop_male_private))
+
+# Changes in male degree conferral proportions from year to year
+male_proportion_degree_changes <-
+  male_degrees_proportions |> 
+  mutate(degree_change_total = prop_male_total - lag(prop_male_total)) |> 
+  mutate(degree_change_certificate = prop_male_certificate - lag(prop_male_certificate)) |> 
+  mutate(degree_change_associates = prop_male_associates - lag(prop_male_associates)) |> 
+  mutate(degree_change_bachelors = prop_male_bachelors - lag(prop_male_bachelors)) |> 
+  mutate(degree_change_masters = prop_male_masters - lag(prop_male_masters)) |> 
+  mutate(degree_change_doctors = prop_male_doctors - lag(prop_male_doctors)) |> 
+  mutate(degree_change_degree = prop_male_degree - lag(prop_male_degree)) |> 
+  mutate(degree_change_degree_public = prop_male_degree_public - lag(prop_male_degree_public)) |> 
+  mutate(degree_change_degree_nonprofit = prop_male_degree_nonprofit - lag(prop_male_degree_nonprofit)) |> 
+  mutate(degree_change_degree_forprofit = prop_male_degree_forprofit - lag(prop_male_degree_forprofit)) |> 
+  mutate(degree_change_nondegree = prop_male_nondegree - lag(prop_male_nondegree)) |> 
+  mutate(degree_change_nondegree_public = prop_male_nondegree_public - lag(prop_male_nondegree_public)) |> 
+  mutate(degree_change_nondegree_nonprofit = prop_male_nondegree_nonprofit - lag(prop_male_nondegree_nonprofit)) |> 
+  mutate(degree_change_nondegree_forprofit = prop_male_nondegree_forprofit - lag(prop_male_nondegree_forprofit))
+
+# Percent change in degree conferral proportions from year to year
+percent_male_proportion_degree_changes <-
+  male_degrees_proportions |> 
+  mutate(degree_percent_change_total = (prop_male_total - lag(prop_male_total))/lag(prop_male_total) * 100) |> 
+  mutate(degree_percent_change_certificate = (prop_male_certificate - lag(prop_male_certificate))/lag(prop_male_certificate) * 100) |> 
+  mutate(degree_percent_change_associates = (prop_male_associates - lag(prop_male_associates))/lag(prop_male_associates) * 100) |> 
+  mutate(degree_percent_change_bachelors = (prop_male_bachelors - lag(prop_male_bachelors))/lag(prop_male_bachelors) * 100) |> 
+  mutate(degree_percent_change_masters = (prop_male_masters - lag(prop_male_masters))/lag(prop_male_masters) * 100) |> 
+  mutate(degree_percent_change_doctors = (prop_male_doctors - lag(prop_male_doctors))/lag(prop_male_doctors) * 100) |> 
+  mutate(degree_percent_change_degree = (prop_male_degree - lag(prop_male_degree))/lag(prop_male_degree) * 100) |> 
+  mutate(degree_percent_change_degree_public = (prop_male_degree_public - lag(prop_male_degree_public))/lag(prop_male_degree_public) * 100) |> 
+  mutate(degree_percent_change_degree_nonprofit = (prop_male_degree_nonprofit - lag(prop_male_degree_nonprofit))/lag(prop_male_degree_nonprofit) * 100) |> 
+  mutate(degree_percent_change_degree_forprofit = (prop_male_degree_forprofit - lag(prop_male_degree_forprofit))/lag(prop_male_degree_forprofit) * 100) |> 
+  mutate(degree_percent_change_nondegree = (prop_male_nondegree - lag(prop_male_nondegree))/lag(prop_male_nondegree) * 100) |> 
+  mutate(degree_percent_change_nondegree_public = (prop_male_nondegree_public - lag(prop_male_nondegree_public))/lag(prop_male_nondegree_public) * 100) |> 
+  mutate(degree_percent_change_nondegree_nonprofit = (prop_male_nondegree_nonprofit - lag(prop_male_nondegree_nonprofit))/lag(prop_male_nondegree_nonprofit) * 100) |> 
+  mutate(degree_percent_change_nondegree_forprofit = (prop_male_nondegree_forprofit - lag(prop_male_nondegree_forprofit))/lag(prop_male_nondegree_forprofit) * 100)
+
+# Size of the difference between degree conferral numbers of different institution types
+institution_type_male_proportion_degree_differences <-
+  male_degrees_proportions |> 
+  mutate(prop_male_public = prop_male_degree_public + prop_male_nondegree_public) |> 
+  mutate(prop_male_private = prop_male_degree_nonprofit + prop_male_degree_forprofit + prop_male_nondegree_nonprofit + prop_male_nondegree_forprofit) |> 
+  mutate(prop_male_advanced = prop_male_masters + prop_male_doctors) |> 
+  mutate(degree_certificate_associates = abs(prop_male_certificate - prop_male_associates)) |> 
+  mutate(degree_associates_bachelors = abs(prop_male_bachelors - prop_male_associates)) |> 
+  mutate(degree_bachelors_advanced = abs(prop_male_advanced - prop_male_bachelors)) |> 
+  mutate(degree_degree_nondegree = abs(prop_male_degree - prop_male_nondegree)) |> 
+  mutate(degree_public_private = abs(prop_male_public - prop_male_private))
