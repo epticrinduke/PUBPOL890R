@@ -300,3 +300,95 @@ institution_type_male_proportion_degree_differences <-
   mutate(degree_bachelors_advanced = abs(prop_male_advanced - prop_male_bachelors)) |> 
   mutate(degree_degree_nondegree = abs(prop_male_degree - prop_male_nondegree)) |> 
   mutate(degree_public_private = abs(prop_male_public - prop_male_private))
+
+# Tables of Interest
+
+# Enrollment
+
+enrollment_changes <-
+  data.frame(
+    year = total_enroll_changes$year,
+    enrollment_change = total_enroll_changes$enroll_change_total,
+    enrollment_percent_change = percent_total_enroll_changes$enroll_percent_change_total
+  )
+
+enrollment_changes_by_program_type <-
+  data.frame(
+    year = total_enroll_changes$year,
+    change_4year = total_enroll_changes$enroll_change_4year,
+    percent_change_4year = percent_total_enroll_changes$enroll_percent_change_4year,
+    change_2year = total_enroll_changes$enroll_change_2year,
+    percent_change_2year = percent_total_enroll_changes$enroll__percent_change_2year,
+    change_lessthan2 = total_enroll_changes$enroll_change_lessthan2,
+    percent_change_lessthan2 = percent_total_enroll_changes$enroll_percent_change_lessthan2
+  )
+
+male_enrollment_changes <-
+  data.frame(
+    year = male_enroll_changes$year,
+    enrollment_change = male_enroll_changes$enroll_change_total,
+    enrollment_proportion_change = male_proportion_enroll_changes$enroll_change_total,
+    enrollment_percent_change = percent_male_enroll_changes$enroll_percent_change_total,
+    change_4year = male_enroll_changes$enroll_change_4year,
+    proportion_change_4year = male_proportion_enroll_changes$enroll_change_4year,
+    percent_change_4year = percent_male_enroll_changes$enroll_percent_change_4year,
+    change_2year = male_enroll_changes$enroll_change_2year,
+    proportion_change_2year = male_proportion_enroll_changes$enroll_change_2year,
+    percent_change_2year = percent_male_enroll_changes$enroll__percent_change_2year,
+    change_lessthan2 = male_enroll_changes$enroll_change_lessthan2,
+    proportion_change_lessthan2 = male_proportion_enroll_changes$enroll_change_lessthan2,
+    percent_change_lessthan2 = percent_male_enroll_changes$enroll_percent_change_lessthan2
+  )
+
+enrollment_change_comparisons <-
+  institution_type_enroll_differences |> 
+  select(year, starts_with("enroll"))
+
+male_enrollment_change_comparisons <-
+  institution_type_male_enroll_differences |> 
+  select(year, starts_with("enroll"))
+
+# Degrees
+
+degree_changes <-
+  data.frame(
+    year = total_degree_changes$year,
+    degree_change = total_degree_changes$degree_change_total,
+    degree_percent_change = percent_total_degree_changes$degree_percent_change_total
+  )
+
+degree_changes_by_degree_type <-
+  data.frame(
+    year = total_degree_changes$year,
+    change_certificate = total_degree_changes$degree_change_certificate,
+    percent_change_certificate = percent_total_degree_changes$degree_percent_change_certificate,
+    change_associates = total_degree_changes$degree_change_associates,
+    percent_change_associates = percent_total_degree_changes$degree_percent_change_associates,
+    change_bachelors = total_degree_changes$degree_change_bachelors,
+    percent_change_bachelors = percent_total_degree_changes$degree_percent_change_bachelors
+  )
+
+male_degree_changes <-
+  data.frame(
+    year = male_degree_changes$year,
+    degree_change = male_degree_changes$degree_change_total,
+    degree_proportion_change = male_proportion_degree_changes$degree_change_total,
+    degree_percent_change = percent_male_degree_changes$degree_percent_change_total,
+    change_certificate = male_degree_changes$degree_change_certificate,
+    proportion_change_certificate = male_proportion_degree_changes$degree_change_certificate,
+    percent_change_certificate = percent_male_degree_changes$degree_percent_change_certificate,
+    change_associates = male_degree_changes$degree_change_associates,
+    proportion_change_associates = male_proportion_degree_changes$degree_change_associates,
+    percent_change_associates = percent_male_degree_changes$degree_percent_change_associates,
+    change_bachelors = male_degree_changes$degree_change_bachelors,
+    proportion_change_bachelors = male_proportion_degree_changes$degree_change_bachelors,
+    percent_change_bachelors = percent_male_degree_changes$degree_percent_change_bachelors
+  )
+
+degree_change_comparisons <-
+  institution_type_degree_differences |> 
+  select(year, starts_with("degree"))
+
+male_degree_change_comparisons <-
+  institution_type_male_degree_differences |> 
+  select(year, starts_with("degree"))
