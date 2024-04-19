@@ -1,0 +1,103 @@
+library(ggplot2)
+library(dplyr)
+
+#1 total enrollment catgorized by institution types
+
+ggplot(total_enrollment, aes(x = year)) +
+  geom_line(aes(y = total_4year, color = "4-Year")) +
+  geom_line(aes(y = total_2year, color = "2-Year")) +
+  geom_line(aes(y = total_lessthan2, color = "Less than 2-Year")) +
+  labs(x = "Year", y = "Enrolled Number", color = "Institution Type", title = "Total Enrollment Categorized by Institution Types") +
+  theme_minimal()
+
+#2 total enrolled degree catgorized by degree types
+
+ggplot(total_enrollment, aes(x = year)) +
+  geom_line(aes(y = total_degree_public, color = "public degree")) +
+  geom_line(aes(y = total_degree_nonprofit, color = "nonprofit degree")) +
+  geom_line(aes(y = total_degree_forprofit, color = "forprofit degree")) +
+  labs(x = "Year", y = "Enrolled Degree", color = "degree Type", title = "Total Enrolled Degree Categorized by Institution Types") +
+  theme_minimal()
+
+#3 Enrollment by gender and institution type
+
+# Calculate female enrollment
+total_enrollment <- total_enrollment %>%
+  mutate(female_4year = total_4year - male_enrollment$male_4year,
+         female_2year = total_2year - male_enrollment$male_2year,
+         female_lessthan2 = total_lessthan2 - male_enrollment$male_lessthan2)
+
+male_data <- male_enrollment %>%
+  select(year, male_4year, male_2year, male_lessthan2) %>%
+  pivot_longer(cols = -year, names_to = "category", values_to = "enrollment")
+
+female_data <- total_enrollment %>%
+  select(year, female_4year, female_2year, female_lessthan2) %>%
+  pivot_longer(cols = -year, names_to = "category", values_to = "enrollment")
+
+# Combine male and female data
+combined_data <- bind_rows(
+  mutate(male_data, gender = "Male"),
+  mutate(female_data, gender = "Female")
+)
+
+# Plot
+p <- ggplot(combined_data, aes(x = factor(year), y = enrollment, fill = category)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~gender) +
+  labs(title = "Enrollment by Gender and Institution Type",
+       x = "Year",
+       y = "Enrollment") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Save the plot with wider dimensions
+ggsave("enrollment_graph.png", p, width = 12, height = 6, units = "in")
+
+#4 Total degrees conferred categorized by degrees types
+
+ggplot(total_degrees, aes(x = year)) +
+  geom_point(aes(y = total_certificate, color = "certificate")) +
+  geom_point(aes(y = total_associates, color = "associates")) +
+  geom_point(aes(y = total_bachelors, color = "bachelors")) +
+  geom_point(aes(y = total_masters, color = "masters")) +
+  geom_point(aes(y = total_doctors, color = "doctors")) +
+  labs(x = "Year", y = "Degrees Conferred", color = "Degrees Type", title = "Total Degrees conferred Categorized by Degrees Types") +
+  theme_minimal()
+
+
+#5 Degrees conferred by gender and institution types
+
+# Calculate female degrees conferred
+total_degrees <- total_degrees %>%
+  mutate(female_certificate = total_certificate - male_degrees$male_certificate,
+         female_associates = total_associates - male_degrees$male_associates,
+         female_bachelors = total_bachelors - male_degrees$male_bachelors,
+         female_masters = total_masters - male_degrees$male_masters,
+         female_doctors = total_doctors - male_degrees$male_doctors)
+
+# Select and pivot male data
+male_data <- male_degrees %>%
+  select(year, male_certificate, male_associates, male_bachelors, male_masters, male_doctors) %>%
+  pivot_longer(cols = -year, names_to = "category", values_to = "enrollment")
+
+# Select and pivot female data
+female_data <- total_degrees %>%
+  select(year, female_certificate, female_associates, female_bachelors, female_masters, female_doctors) %>%
+  pivot_longer(cols = -year, names_to = "category", values_to = "enrollment")
+
+# Combine male and female data
+combined_data <- bind_rows(
+  mutate(male_data, gender = "Male"),
+  mutate(female_data, gender = "Female")
+)
+
+# Plot
+ggplot(combined_data, aes(x = factor(year), y = enrollment, fill = category)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~gender) +
+  labs(title = "Degrees conferred by Gender",
+       x = "Year",
+       y = "Degrees conferred") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
