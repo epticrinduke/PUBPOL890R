@@ -301,6 +301,18 @@ institution_type_male_proportion_degree_differences <-
   mutate(degree_degree_nondegree = abs(prop_male_degree - prop_male_nondegree)) |> 
   mutate(degree_public_private = abs(prop_male_public - prop_male_private))
 
+
+#Mean, range, and standard deviation of male enrollment and degree rates
+male_enroll_summary <-
+  data.frame(mean = mean(male_enrollment$male_total), standard_deviation = sd(male_enrollment$male_total))
+male_enroll_summary <-
+  data.frame(range = range(male_enrollment$male_total), standard_deviation = sd(male_enrollment$male_total))
+male_degrees_summary <-
+  data.frame(range = range(male_degrees$male_total), standard_deviation = sd(male_degrees$male_total))
+male_degrees_summary <-
+  data.frame(mean = mean(male_degrees$male_total), standard_deviation = sd(male_degrees$male_total))
+
+
 # Tables of Interest
 
 # Enrollment
